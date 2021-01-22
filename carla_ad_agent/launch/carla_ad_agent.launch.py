@@ -43,13 +43,38 @@ def generate_launch_description():
         ),
         launch.actions.DeclareLaunchArgument(
             name='target_speed',
-            default_value='20'
+            default_value='30'
         ),
         launch.actions.DeclareLaunchArgument(
             name='avoid_risk',
             default_value='True'
         ),
-        launch.actions.OpaqueFunction(function=launch_setup)
+        launch.actions.OpaqueFunction(function=launch_setup),
+        launch_ros.actions.Node(
+            package='carla_ad_agent',
+            executable='local_planner',
+            name=['local_planner_', launch.substitutions.LaunchConfiguration('role_name')],
+            remappings=[
+                (
+                    ["/carla/",
+                        launch.substitutions.LaunchConfiguration('role_name'), "/target_speed"],
+                    ["/carla/",
+                        launch.substitutions.LaunchConfiguration('role_name'), "/target_speed_to_pid"]
+                )
+            ],
+            output='screen',
+            parameters=[
+                {
+                    'target_speed': launch.substitutions.LaunchConfiguration('target_speed')
+                },
+                {
+                    'role_name': launch.substitutions.LaunchConfiguration('role_name')
+                },
+                {
+                    'avoid_risk': launch.substitutions.LaunchConfiguration('avoid_risk')
+                }
+            ]
+        )
     ])
     return ld
 
