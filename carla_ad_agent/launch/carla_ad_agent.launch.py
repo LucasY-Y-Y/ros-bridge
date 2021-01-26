@@ -5,30 +5,30 @@ import launch
 import launch_ros.actions
 
 
-def launch_setup(context, *args, **kwargs):
-    # workaround to use launch argument 'role_name' as a part of the string used for the node's name
-    node_name = 'carla_ad_agent_' + \
-        launch.substitutions.LaunchConfiguration('role_name').perform(context)
+# def launch_setup(context, *args, **kwargs):
+#     # workaround to use launch argument 'role_name' as a part of the string used for the node's name
+#     node_name = 'carla_ad_agent_' + \
+#         launch.substitutions.LaunchConfiguration('role_name').perform(context)
 
-    carla_ad_demo = launch_ros.actions.Node(
-        package='carla_ad_agent',
-        executable='carla_ad_agent',
-        name=node_name,
-        output='screen',
-        parameters=[
-            {
-                'target_speed': launch.substitutions.LaunchConfiguration('target_speed')
-            },
-            {
-                'role_name': launch.substitutions.LaunchConfiguration('role_name')
-            },
-            {
-                'avoid_risk': launch.substitutions.LaunchConfiguration('avoid_risk')
-            }
-        ]
-    )
+#     carla_ad_demo = launch_ros.actions.Node(
+#         package='carla_ad_agent',
+#         executable='carla_ad_agent',
+#         name=node_name,
+#         output='screen',
+#         parameters=[
+#             {
+#                 'target_speed': launch.substitutions.LaunchConfiguration('target_speed')
+#             },
+#             {
+#                 'role_name': launch.substitutions.LaunchConfiguration('role_name')
+#             },
+#             {
+#                 'avoid_risk': launch.substitutions.LaunchConfiguration('avoid_risk')
+#             }
+#         ]
+#     )
 
-    return [carla_ad_demo]
+#     return [carla_ad_demo]
 
 
 def generate_launch_description():
@@ -49,7 +49,7 @@ def generate_launch_description():
             name='avoid_risk',
             default_value='True'
         ),
-        launch.actions.OpaqueFunction(function=launch_setup),
+        # launch.actions.OpaqueFunction(function=launch_setup),
         launch_ros.actions.Node(
             package='carla_ad_agent',
             executable='local_planner',
@@ -64,6 +64,9 @@ def generate_launch_description():
             ],
             output='screen',
             parameters=[
+                {
+                    'use_sim_time': True
+                },
                 {
                     'target_speed': launch.substitutions.LaunchConfiguration('target_speed')
                 },
